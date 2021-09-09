@@ -2,6 +2,7 @@ package com.rafaelturse.simpleschool.service.imp;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -47,6 +48,7 @@ public class GradesServiceImp implements GradesService {
 		repository.delete(grades);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
 	public List<GradesORM> find(GradesORM gradesFilter) {
@@ -54,6 +56,10 @@ public class GradesServiceImp implements GradesService {
 				ExampleMatcher.matching().withIgnoreCase().withStringMatcher(StringMatcher.CONTAINING));
 
 		return repository.findAll(example);
+	}
+
+	public Optional<GradesORM> findById(Long id) {
+		return repository.findById(id);
 	}
 
 	@Override
