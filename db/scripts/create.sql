@@ -18,6 +18,8 @@ CREATE TABLE school.tb_user (
   input date default now()
 );
 
+select * from tb_user
+
 -- ################################################# --
 
 -- DROP TABLE school.school
@@ -49,6 +51,7 @@ CREATE TABLE school.tb_subject (
 -- DROP TABLE school.tb_grades
 CREATE TABLE school.tb_grades (
   id bigserial NOT NULL PRIMARY KEY,
+  id_school bigserial NOT NULL,
   id_student bigserial NOT NULL,
   id_subject bigserial NOT NULL,
   grade_1 int,

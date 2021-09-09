@@ -26,13 +26,26 @@ public class GradesORM implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@Enumerated(value = EnumType.ORDINAL)
+	private SubjectEnum subject;
 
 	@ManyToOne
 	@JoinColumn(name = "id_school")
 	private SchoolORM school;
+	
+	@ManyToOne
+	@JoinColumn(name = "id_student")
+	private StudentORM student;
 
 	private String name;
 	
-	@Enumerated(value = EnumType.ORDINAL)
-	private SubjectEnum subject;
+	private Integer grade1;
+	
+	private Integer grade2;
+
+	private Integer grade3;
+	
+	private Integer grade4;
+	
 }
