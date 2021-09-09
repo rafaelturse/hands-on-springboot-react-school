@@ -15,6 +15,7 @@ import com.rafaelturse.simpleschool.model.entity.StudentORM;
 import com.rafaelturse.simpleschool.model.repository.StudentRepository;
 import com.rafaelturse.simpleschool.service.StudentService;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 @Service
 public class StudentServiceImp implements StudentService {
 
@@ -57,5 +58,10 @@ public class StudentServiceImp implements StudentService {
 
 	public Optional<StudentORM> findById(Long id) {
 		return repository.findById(id);
+	}
+
+	@Override
+	public Optional<StudentORM> findBySchoolName(String school) {
+		return repository.findBySchoolName(school);
 	}
 }

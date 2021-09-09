@@ -15,6 +15,7 @@ import com.rafaelturse.simpleschool.model.entity.GradesORM;
 import com.rafaelturse.simpleschool.model.repository.GradesRepository;
 import com.rafaelturse.simpleschool.service.GradesService;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 @Service
 public class GradesServiceImp implements GradesService {
 
@@ -48,12 +49,14 @@ public class GradesServiceImp implements GradesService {
 		repository.delete(grades);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
 	public List<GradesORM> find(GradesORM gradesFilter) {
 		Example example = Example.of(gradesFilter,
-				ExampleMatcher.matching().withIgnoreCase().withStringMatcher(StringMatcher.CONTAINING));
+				ExampleMatcher
+				.matching()
+				.withIgnoreCase()
+				.withStringMatcher(StringMatcher.CONTAINING));
 
 		return repository.findAll(example);
 	}
@@ -67,10 +70,6 @@ public class GradesServiceImp implements GradesService {
 		/*
 		 * if (grades.getStudent() == null ||
 		 * grades.getStudent().getName().trim().equals("")) { throw new
-		 * BusinessRuleException(""); }
-		 * 
-		 * if (grades.getSchool() == null ||
-		 * grades.getSchool().getName().trim().equals("")) { throw new
 		 * BusinessRuleException(""); }
 		 * 
 		 * if (grades.getSubject() == null ||

@@ -16,4 +16,6 @@ public interface StudentService {
 	List<StudentORM> find(StudentORM studentFilter);
 
 	Optional<StudentORM> findById(Long id);
+	
+	Optional<StudentORM> findBySchoolName(String school);
 }

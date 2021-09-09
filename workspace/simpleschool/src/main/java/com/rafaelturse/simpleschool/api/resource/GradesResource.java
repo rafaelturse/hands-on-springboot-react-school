@@ -1,27 +1,35 @@
 package com.rafaelturse.simpleschool.api.resource;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rafaelturse.simpleschool.api.dto.GradesDTO;
 import com.rafaelturse.simpleschool.model.entity.GradesORM;
 import com.rafaelturse.simpleschool.model.entity.SchoolORM;
 import com.rafaelturse.simpleschool.model.entity.StudentORM;
+import com.rafaelturse.simpleschool.model.entity.UserORM;
 import com.rafaelturse.simpleschool.model.enumeration.SubjectEnum;
 import com.rafaelturse.simpleschool.service.GradesService;
 import com.rafaelturse.simpleschool.service.SchoolService;
 import com.rafaelturse.simpleschool.service.StudentService;
+import com.rafaelturse.simpleschool.service.UserService;
 import com.rafaelturse.simpleschool.utils.exception.BusinessRuleException;
 import com.rafaelturse.simpleschool.utils.message.MessageUtils;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 @RestController
 @RequestMapping("/api/grades")
 public class GradesResource {
@@ -33,20 +41,50 @@ public class GradesResource {
 	private StudentService studentService;
 
 	@Autowired
-	private GradesService service;
-	
-	private GradesORM converter(GradesDTO dto) {
-		SchoolORM school = schoolService.findById(dto.getSchool())
-				.orElseThrow(() -> new BusinessRuleException(MessageUtils.ERROR_MESSAGE_USER_NOT_FOUND_BY_ID));
-		
-		StudentORM student = studentService.findById(dto.getStudent())
-				.orElseThrow(() -> new BusinessRuleException(MessageUtils.ERROR_MESSAGE_STUDENT_NOT_FOUND_BY_ID));
+	private UserService userService;
 
+	@Autowired
+	private GradesService service;
+
+	private Optional<SchoolORM> findSchool(Long id) {
+		try {
+			return schoolService.findById(id);
+		} catch (BusinessRuleException e) {
+			throw new BusinessRuleException(MessageUtils.ERROR_MESSAGE_SCHOOL_NOT_FOUND);
+		}
+	}
+	
+	private SchoolORM findSchool(String school) {
+		return schoolService.find(SchoolORM.builder().name(school).build()).get(0);
+	}
+
+	private Optional<StudentORM> findStudent(Long i) {
+		try {
+			return studentService.findById(i);
+		} catch (BusinessRuleException e) {
+			throw new BusinessRuleException(MessageUtils.ERROR_MESSAGE_STUDENT_NOT_FOUND_BY_ID);
+		}
+	}
+	
+	private StudentORM findStudent(String student) {
+		return studentService.find(StudentORM.builder().name(student).build()).get(0);
+	}
+
+	private Optional<UserORM> findUser(Long i) {
+		try {
+			return userService.findById(i);
+		} catch (BusinessRuleException e) {
+			throw new BusinessRuleException(MessageUtils.ERROR_MESSAGE_USER_NOT_FOUND_BY_ID);
+		}
+	}
+
+	private GradesORM converter(GradesDTO dto) {
 		GradesORM grades = GradesORM.builder()
 				.id(dto.getId())
-				.subject(SubjectEnum.valueOf(dto.getSubject().getName()))
-				.school(school)
-				.student(student)
+				.user(findUser(dto.getUser()).get())
+				.subject(dto.getSubject())
+				.school(findSchool(dto.getSchool()).get())
+				.student(findStudent(dto.getStudent()).get())
 				.grade1(dto.getGrade1())
 				.grade2(dto.getGrade2())
 				.grade3(dto.getGrade3())
@@ -58,13 +96,15 @@ public class GradesResource {
 	@PostMapping
 	public ResponseEntity save(@RequestBody GradesDTO dto) {
 		try {
-			GradesORM savedGrades = service.save(converter(dto));
+			GradesORM grades = converter(dto);
+
+			GradesORM savedGrades = service.save(grades);
 			return new ResponseEntity(savedGrades, HttpStatus.CREATED);
 		} catch (BusinessRuleException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
-	
+
 	@PutMapping("{id}")
 	public ResponseEntity update(@PathVariable Long id, @RequestBody GradesDTO dto) {
 		return service.findById(id).map(i -> {
@@ -78,12 +118,38 @@ public class GradesResource {
 			}
 		}).orElseGet(() -> new ResponseEntity(MessageUtils.ERROR_MESSAGE_GRADES_NOT_FOUND, HttpStatus.BAD_REQUEST));
 	}
-	
+
 	@DeleteMapping("{id}")
-	public ResponseEntity deletar(@PathVariable("id") Long id) {
+	public ResponseEntity delete(@PathVariable("id") Long id) {
 		return service.findById(id).map(i -> {
 			service.delete(i);
 			return new ResponseEntity(HttpStatus.NO_CONTENT);
 		}).orElseGet(() -> new ResponseEntity(MessageUtils.ERROR_MESSAGE_GRADES_NOT_FOUND, HttpStatus.BAD_REQUEST));
+	}
+
+	@GetMapping
+	public ResponseEntity find(
+			@RequestParam(value ="school" , required = false) String school,
+			@RequestParam(value = "student", required = false) String student,
+			@RequestParam(value = "subject", required = false) Integer subject,
+			@RequestParam("user") Long user) {
+		GradesORM gradesFilter = new GradesORM();
+		
+		if ((null != school) && (!school.isBlank())) {
+			gradesFilter.setSchool(findSchool(school));
+		}
+		
+		if ((null != student) && (!student.isBlank())) {
+			gradesFilter.setStudent(findStudent(student));
+		}
+		
+		if (null != subject) {
+			gradesFilter.setSubject(SubjectEnum.valueOfId(subject));
+		}
+		
+		gradesFilter.setUser(findUser(user).get());
+	
+		List<GradesORM> grades = service.find(gradesFilter);
+		return ResponseEntity.ok(grades);
 	}
 }

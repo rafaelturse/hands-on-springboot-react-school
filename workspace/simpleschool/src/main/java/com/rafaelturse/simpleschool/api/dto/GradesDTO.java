@@ -15,8 +15,9 @@ public class GradesDTO {
 
 	private Long id;
 	private SubjectEnum subject;
-	private Long school;
+	private Long user;
 	private Long student;
+	private Long school;
 	private Integer grade1;
 	private Integer grade2;
 	private Integer grade3;

@@ -16,4 +16,6 @@ public interface SchoolService {
 	List<SchoolORM> find(SchoolORM schoolFilter);
 
 	Optional<SchoolORM> findById(Long id);
+
+	Optional<SchoolORM> findByName(String name);
 }
