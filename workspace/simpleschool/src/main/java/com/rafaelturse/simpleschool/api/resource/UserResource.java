@@ -14,6 +14,7 @@ import com.rafaelturse.simpleschool.service.UserService;
 import com.rafaelturse.simpleschool.utils.exception.AuthenticationException;
 import com.rafaelturse.simpleschool.utils.exception.BusinessRuleException;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 @RestController
 @RequestMapping("/api/users")
 public class UserResource {
