@@ -144,11 +144,11 @@ public class GradesResource {
 			@RequestParam("user") Long user) {
 		GradesORM gradesFilter = new GradesORM();
 		
-		if ((null != school) && (!school.isBlank())) {
+		if ((null != school)) {
 			gradesFilter.setSchool(findSchool(school));
 		}
 		
-		if ((null != student) && (!student.isBlank())) {
+		if ((null != student)) {
 			gradesFilter.setStudent(student);
 		}
 		
