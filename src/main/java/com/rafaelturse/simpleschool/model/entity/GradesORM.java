@@ -49,15 +49,15 @@ public class GradesORM implements Serializable {
 	private String student;
 
 	@Column(name = "grade_1")
-	private Integer grade1;
+	private Float grade1;
 
 	@Column(name = "grade_2")
-	private Integer grade2;
+	private Float grade2;
 
 	@Column(name = "grade_3")
-	private Integer grade3;
+	private Float grade3;
 
 	@Column(name = "grade_4")
-	private Integer grade4;
+	private Float grade4;
 
 }

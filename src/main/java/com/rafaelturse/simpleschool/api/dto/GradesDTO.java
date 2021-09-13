@@ -18,8 +18,8 @@ public class GradesDTO {
 	private Long user;
 	private String student;
 	private Long school;
-	private Integer grade1;
-	private Integer grade2;
-	private Integer grade3;
-	private Integer grade4;
+	private Float grade1;
+	private Float grade2;
+	private Float grade3;
+	private Float grade4;
 }

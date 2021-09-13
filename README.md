@@ -1,1 +1,1 @@
-# hands-on-springboot-react-school
+# hands-on-springboot-react-school-api
