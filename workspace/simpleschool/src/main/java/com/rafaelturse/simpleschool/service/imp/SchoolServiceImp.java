@@ -56,6 +56,12 @@ public class SchoolServiceImp implements SchoolService {
 		return repository.findAll(example);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public List<SchoolORM> findAll() {
+		return repository.findAll();
+	}
+
 	public Optional<SchoolORM> findById(Long id) {
 		return repository.findById(id);
 	}

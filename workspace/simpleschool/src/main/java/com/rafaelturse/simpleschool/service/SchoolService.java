@@ -18,4 +18,6 @@ public interface SchoolService {
 	Optional<SchoolORM> findById(Long id);
 
 	Optional<SchoolORM> findByName(String name);
+
+	List<SchoolORM> findAll();
 }

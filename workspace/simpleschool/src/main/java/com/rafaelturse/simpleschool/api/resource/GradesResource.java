@@ -19,12 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.rafaelturse.simpleschool.api.dto.GradesDTO;
 import com.rafaelturse.simpleschool.model.entity.GradesORM;
 import com.rafaelturse.simpleschool.model.entity.SchoolORM;
-import com.rafaelturse.simpleschool.model.entity.StudentORM;
 import com.rafaelturse.simpleschool.model.entity.UserORM;
 import com.rafaelturse.simpleschool.model.enumeration.SubjectEnum;
 import com.rafaelturse.simpleschool.service.GradesService;
 import com.rafaelturse.simpleschool.service.SchoolService;
-import com.rafaelturse.simpleschool.service.StudentService;
 import com.rafaelturse.simpleschool.service.UserService;
 import com.rafaelturse.simpleschool.utils.exception.BusinessRuleException;
 import com.rafaelturse.simpleschool.utils.message.MessageUtils;
@@ -36,9 +34,6 @@ public class GradesResource {
 
 	@Autowired
 	private SchoolService schoolService;
-
-	@Autowired
-	private StudentService studentService;
 
 	@Autowired
 	private UserService userService;
@@ -58,18 +53,6 @@ public class GradesResource {
 		return schoolService.find(SchoolORM.builder().name(school).build()).get(0);
 	}
 
-	private Optional<StudentORM> findStudent(Long i) {
-		try {
-			return studentService.findById(i);
-		} catch (BusinessRuleException e) {
-			throw new BusinessRuleException(MessageUtils.ERROR_MESSAGE_STUDENT_NOT_FOUND_BY_ID);
-		}
-	}
-	
-	private StudentORM findStudent(String student) {
-		return studentService.find(StudentORM.builder().name(student).build()).get(0);
-	}
-
 	private Optional<UserORM> findUser(Long i) {
 		try {
 			return userService.findById(i);
@@ -84,11 +67,26 @@ public class GradesResource {
 				.user(findUser(dto.getUser()).get())
 				.subject(dto.getSubject())
 				.school(findSchool(dto.getSchool()).get())
-				.student(findStudent(dto.getStudent()).get())
+				.student(dto.getStudent())
 				.grade1(dto.getGrade1())
 				.grade2(dto.getGrade2())
 				.grade3(dto.getGrade3())
 				.grade4(dto.getGrade4())
+				.build();
+		return grades;
+	}
+	
+	private GradesDTO converter(GradesORM orm) {
+		GradesDTO grades = GradesDTO.builder()
+				.id(orm.getId())
+				.user(orm.getUser().getId())
+				.subject(orm.getSubject())
+				.school(orm.getSchool().getId())
+				.student(orm.getStudent())
+				.grade1(orm.getGrade1())
+				.grade2(orm.getGrade2())
+				.grade3(orm.getGrade3())
+				.grade4(orm.getGrade4())
 				.build();
 		return grades;
 	}
@@ -126,6 +124,17 @@ public class GradesResource {
 			return new ResponseEntity(HttpStatus.NO_CONTENT);
 		}).orElseGet(() -> new ResponseEntity(MessageUtils.ERROR_MESSAGE_GRADES_NOT_FOUND, HttpStatus.BAD_REQUEST));
 	}
+	
+	@GetMapping("{id}")
+	public ResponseEntity findById(@PathVariable("id") Long id) {
+		return service.findById(id).map(i -> {
+			try {
+				return ResponseEntity.ok(converter(i));
+			} catch (BusinessRuleException e) {
+				return ResponseEntity.badRequest().body(e.getMessage());
+			}
+		}).orElseGet(() -> new ResponseEntity(MessageUtils.ERROR_MESSAGE_GRADES_NOT_FOUND, HttpStatus.BAD_REQUEST));
+	}
 
 	@GetMapping
 	public ResponseEntity find(
@@ -140,7 +149,7 @@ public class GradesResource {
 		}
 		
 		if ((null != student) && (!student.isBlank())) {
-			gradesFilter.setStudent(findStudent(student));
+			gradesFilter.setStudent(student);
 		}
 		
 		if (null != subject) {

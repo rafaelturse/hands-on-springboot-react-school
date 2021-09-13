@@ -43,12 +43,10 @@ public class GradesORM implements Serializable {
 	private SchoolORM school;
 
 	@ManyToOne
-	@JoinColumn(name = "id_student")
-	private StudentORM student;
-
-	@ManyToOne
 	@JoinColumn(name = "id_user")
 	private UserORM user;
+	
+	private String student;
 
 	@Column(name = "grade_1")
 	private Integer grade1;
