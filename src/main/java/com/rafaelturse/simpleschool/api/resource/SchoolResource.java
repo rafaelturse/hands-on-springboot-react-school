@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.rafaelturse.simpleschool.api.dto.GradesDTO;
 import com.rafaelturse.simpleschool.api.dto.SchoolDTO;
-import com.rafaelturse.simpleschool.model.entity.GradesORM;
 import com.rafaelturse.simpleschool.model.entity.SchoolORM;
 import com.rafaelturse.simpleschool.service.SchoolService;
 import com.rafaelturse.simpleschool.utils.exception.BusinessRuleException;
